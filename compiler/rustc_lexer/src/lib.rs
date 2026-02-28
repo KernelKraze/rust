@@ -71,26 +71,21 @@ impl Token {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TokenKind {
     /// A line comment, e.g. `// comment`.
-    LineComment {
-        doc_style: Option<DocStyle>,
-    },
+    LineComment { doc_style: Option<DocStyle> },
 
     /// A block comment, e.g. `/* block comment */`.
     ///
     /// Block comments can be recursive, so a sequence like `/* /* */`
     /// will not be considered terminated and will result in a parsing error.
-    BlockComment {
-        doc_style: Option<DocStyle>,
-        terminated: bool,
-    },
+    BlockComment { doc_style: Option<DocStyle>, terminated: bool },
 
     /// Any whitespace character sequence.
     Whitespace,
 
-    Frontmatter {
-        has_invalid_preceding_whitespace: bool,
-        invalid_infostring: bool,
-    },
+    /// A frontmatter block (`---`). Only recognized at file start.
+    /// `has_invalid_preceding_whitespace`: opening `---` not preceded by newline.
+    /// `invalid_infostring`: text after opening `---` is not a valid identifier.
+    Frontmatter { has_invalid_preceding_whitespace: bool, invalid_infostring: bool },
 
     /// An identifier or keyword, e.g. `ident` or `continue`.
     Ident,
@@ -133,15 +128,10 @@ pub enum TokenKind {
     /// this type will need to check for and reject that case.
     ///
     /// See [LiteralKind] for more details.
-    Literal {
-        kind: LiteralKind,
-        suffix_start: u32,
-    },
+    Literal { kind: LiteralKind, suffix_start: u32 },
 
     /// A lifetime, e.g. `'a`.
-    Lifetime {
-        starts_with_number: bool,
-    },
+    Lifetime { starts_with_number: bool },
 
     /// `;`
     Semi,
